@@ -31,6 +31,8 @@ app.get('/question', (req, res) => {
 });
 
 io.of(/./g).on('connection', function(socket){
+    console.log(socket.nsp.name + ": " + "connection");
+
     if(!games[socket.nsp.name]){
         games[socket.nsp.name] = {
             users: [],
@@ -38,15 +40,18 @@ io.of(/./g).on('connection', function(socket){
         };
     }
 
-    if(!tokens[socket.nsp.name]){
-        axios.get(`https://opentdb.com/api_token.php?command=request`)
-            .then(res => {
-                tokens[socket.nsp.name] = res.data.token;
-                // console.log("ready");
-            });
-    }
+    // if(!tokens[socket.nsp.name]){
+    //     axios.get(`https://opentdb.com/api_token.php?command=request`)
+    //         .then(res => {
+    //             tokens[socket.nsp.name] = res.data.token;
+    //             // console.log("ready");
+    //         });
+    // }
+
+    socket.nsp.emit('update users');
 
     socket.on('username', username => {
+        console.log(socket.nsp.name + ": " + username + " connected");
         socket.username = username;
         games[socket.nsp.name].users.push(username);
         socket.nsp.emit('output', '🔵 <i>' + socket.username + ' join the chat..</i>');
@@ -55,12 +60,14 @@ io.of(/./g).on('connection', function(socket){
 
     socket.on('disconnect', reason => {
         var index = games[socket.nsp.name].users.indexOf(socket.username);
+
         if(index > -1){
+            console.log(socket.nsp.name + ": " + socket.username + " disconnected");
             games[socket.nsp.name].users. splice(index, 1);
+            socket.nsp.emit('output', '🔴 <i>' + socket.username + ' left the chat..</i>');
+            socket.nsp.emit('update users');
         }
 
-        socket.nsp.emit('output', '🔴 <i>' + socket.username + ' left the chat..</i>');
-        socket.nsp.emit('update users');
 
         if(!games[socket.nsp.name].users.length){
             games[socket.nsp.name] = null; 
