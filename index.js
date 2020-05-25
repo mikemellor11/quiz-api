@@ -15,7 +15,7 @@ app.get('/scores/:room', (req, res) => {
     var game = games[`/${req.params.room}`];
     
     res.json(game && game.users.reduce((arr, d) => {
-            if(!d.session || arr.findIndex(dd => d.session.id === dd.session.id) === -1){
+            if(!d.session || arr.findIndex(dd => !dd.session || d.session.id === dd.session.id) === -1){
                 arr.push(d);
             }
             return arr;
