@@ -58,16 +58,17 @@ io.of(/./g).on('connection', function(socket){
         socket.username = username;
         games[socket.nsp.name].users.find(d => d.id === socket.id).name = username;
         
-        socket.nsp.emit('output', '🔵 <i>' + socket.username + ' join the chat..</i>');
+        socket.nsp.emit('output', '🔵 <i>' + socket.username + ' joined the game..</i>');
         socket.nsp.emit('update users');
     });
 
     socket.on('leave', () => {
         console.log(`${socket.nsp.name}: ${socket.id} ${socket.username} left the game`);
+        socket.nsp.emit('output', '🔵 <i>' + socket.username + ' left the games..</i>');
+        
         socket.username = null;
         games[socket.nsp.name].users.find(d => d.id === socket.id).name = null;
         
-        socket.nsp.emit('output', '🔵 <i>' + socket.username + ' left the chat..</i>');
         socket.nsp.emit('update users');
     });
 
@@ -78,7 +79,6 @@ io.of(/./g).on('connection', function(socket){
 
         if(index > -1){
             games[socket.nsp.name].users. splice(index, 1);
-            socket.nsp.emit('output', '🔴 <i>' + socket.username + ' left the chat..</i>');
             socket.nsp.emit('update users');
         }
 
