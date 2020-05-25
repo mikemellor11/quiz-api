@@ -15,7 +15,8 @@ app.get('/scores/:room', (req, res) => {
     var game = games[`/${req.params.room}`];
     res.json(game && game.users.map(d => {
         return {
-            name: d,
+            id: d.id,
+            name: d.name,
             score: 0
         };
     }) || []);
@@ -31,7 +32,7 @@ app.get('/question', (req, res) => {
 });
 
 io.of(/./g).on('connection', function(socket){
-    console.log(socket.nsp.name + ": " + "connection");
+    console.log(socket.nsp.name + ": " + socket.id + " connected");
 
     if(!games[socket.nsp.name]){
         games[socket.nsp.name] = {
@@ -39,6 +40,8 @@ io.of(/./g).on('connection', function(socket){
             state: 0
         };
     }
+
+    games[socket.nsp.name].users.push({id: socket.id});
 
     // if(!tokens[socket.nsp.name]){
     //     axios.get(`https://opentdb.com/api_token.php?command=request`)
@@ -51,18 +54,20 @@ io.of(/./g).on('connection', function(socket){
     socket.nsp.emit('update users');
 
     socket.on('username', username => {
-        console.log(socket.nsp.name + ": " + username + " connected");
+        console.log(`${socket.nsp.name}: ${socket.id} ${username} joined the game`);
         socket.username = username;
-        games[socket.nsp.name].users.push(username);
+        games[socket.nsp.name].users.find(d => d.id === socket.id).name = username;
+        
         socket.nsp.emit('output', '🔵 <i>' + socket.username + ' join the chat..</i>');
         socket.nsp.emit('update users');
     });
 
     socket.on('disconnect', reason => {
-        var index = games[socket.nsp.name].users.indexOf(socket.username);
+        console.log(`${socket.nsp.name}: ${socket.id} ${socket.username || ''} disconnected`);
+
+        var index = games[socket.nsp.name].users.findIndex(d => d.id === socket.id);
 
         if(index > -1){
-            console.log(socket.nsp.name + ": " + socket.username + " disconnected");
             games[socket.nsp.name].users. splice(index, 1);
             socket.nsp.emit('output', '🔴 <i>' + socket.username + ' left the chat..</i>');
             socket.nsp.emit('update users');
