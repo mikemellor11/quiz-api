@@ -1,6 +1,10 @@
 var { STATE, games } = require('../../globals.js');
 var { nextQuestion } = require('../../services/quiz.js');
 
+var users = {}; ({ 
+    active: users.active
+} = require('../../services/users.js'));
+
 module.exports = (socket) => {
     var game = games[socket.nsp.name];
     
@@ -16,7 +20,7 @@ module.exports = (socket) => {
 
             socket.nsp.emit('question');
 
-            if(game.question.submitted.length === game.users.length){
+            if(game.question.submitted.length === users.active(game).length){
                 game.question.submitted.forEach(d => {
                     var user = game.users.find(dd => dd.session.id === d.id);
 

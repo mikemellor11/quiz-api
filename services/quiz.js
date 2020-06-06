@@ -41,4 +41,4 @@ module.exports = {
                 socket.nsp.emit('question');
             });
     }
-}
+};
