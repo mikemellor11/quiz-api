@@ -2,19 +2,21 @@ var { STATE, games } = require('../../globals.js');
 var { nextQuestion } = require('../../services/quiz.js');
 
 var users = {}; ({ 
-    active: users.active
+    active: users.active,
+    findActive: users.findActive
 } = require('../../services/users.js'));
 
 module.exports = (socket) => {
     var game = games[socket.nsp.name];
     
-    socket.on('answer', index => {
+    socket.on('answer', ({session, index}) => {
+        var user = users.findActive(session.id);
         // Only accept a single answer from the same user
-        if(game.question.submitted.findIndex(d => d.id === socket.session.id) === -1){
-            console.log(`${socket.nsp.name}: ${socket.id} ${socket.session.name} answered ${index}`);
+        if(game.question.submitted.findIndex(d => d.id === user.session.id) === -1){
+            console.log(`${socket.nsp.name}: ${socket.id} ${user.session.name} answered ${index}`);
 
             game.question.submitted.push({
-                id: socket.session.id,
+                id: user.session.id,
                 index: index
             });
 
