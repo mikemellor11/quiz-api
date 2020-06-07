@@ -1,0 +1,40 @@
+{
+    "game-1": {
+        "users": [
+            {
+                "id": "socket-id-1",
+                "session": {
+                    "name": "name-1",
+                    "id": "session-id-1"
+                }
+            },
+            {
+                "id": "socket-id-2",
+                "session": {
+                    "name": "name-2",
+                    "id": "session-id-2"
+                }
+            },
+            {
+                "id": "socket-id-3"
+            },
+            {
+                "id": "socket-id-4"
+            },
+            {
+                "id": "socket-id-5",
+                "session": {
+                    "name": "name-2",
+                    "id": "session-id-2"
+                }
+            },
+            {
+                "id": "socket-id-6",
+                "session": {
+                    "name": "name-3",
+                    "id": "session-id-3"
+                }
+            }
+        ]
+    }
+}
