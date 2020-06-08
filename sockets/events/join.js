@@ -9,19 +9,25 @@ module.exports = (socket) => {
     var game = games[socket.nsp.name];
     
     socket.on('join', session => {
-        if(users.findActive(game, session.id)){
+        var user = users.findActive(game, session.id);
+
+        if(user){
             console.log(`${socket.nsp.name}: ${socket.id} ${session.id.slice(0, 8)} ${session.name} joined the game in a another window`);
+
+            user.sockets.push(socket.id);
         } else {
             console.log(`${socket.nsp.name}: ${socket.id} ${session.id.slice(0, 8)} ${session.name} joined the game`);
 
-            var user = users.find(game, socket.id);
-
-            user.session = session;
-            user.score = 0;
+            game.users.push({
+                id: session.id,
+                name: session.name,
+                sockets: [socket.id],
+                score: 0
+            });
             
-            socket.nsp.emit('output', '🔵 <i>' + session.name + ' joined the game..</i>');
-            
-            socket.nsp.emit('update users');
+            socket.nsp.emit('output', '🔵 <i>' + session.name + ' joined the game..</i>');   
         }
+        
+        socket.nsp.emit('update users');
     });
 }

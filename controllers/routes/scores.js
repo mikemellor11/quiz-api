@@ -3,7 +3,8 @@ const route = express.Router();
 var { games } = require('../../globals.js');
 
 var users = {}; ({ 
-    active: users.active
+    active: users.active,
+    spectators: users.spectators
 } = require('../../services/users.js'));
 
 module.exports = (app) => {
@@ -11,7 +12,7 @@ module.exports = (app) => {
 
     route.get('/:room', (req, res) => {
         var game = games[`/${req.params.room}`];
-        
-        res.json(game && users.active(game) || []);
+
+        res.json(game && users.active(game).concat(users.spectators(game)) || []);
     });
 };

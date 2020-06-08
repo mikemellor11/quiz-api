@@ -10,10 +10,13 @@ module.exports = (socket) => {
     socket.on('leave', (session) => {
         var user = users.findActive(game, session.id);
 
-        console.log(`${socket.nsp.name}: ${socket.id} ${user.session.name} left the game`);
-        socket.nsp.emit('output', '🔴 <i>' + user.session.name + ' left the game..</i>');
-    
-        user.session = null;
+        console.log(`${socket.nsp.name}: ${socket.id} ${user.name} left the game`);
+
+        socket.nsp.emit('output', '🔴 <i>' + user.name + ' left the game..</i>');
+        
+        var index = game.users.findIndex(d => d.id === user.id);
+
+        game.users.splice(index, 1);
         
         socket.nsp.emit('update users');
     });

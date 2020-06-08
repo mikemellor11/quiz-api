@@ -7,11 +7,12 @@ module.exports = {
         if(!games[socket.nsp.name]){
             games[socket.nsp.name] = {
                 users: [],
+                sockets: [],
                 state: STATE.SETUP,
                 token: null,
                 question: null
             };
-            console.log(`${socket.nsp.name}: ${socket.id} State: ${STATE.SETUP}`);
+            console.log(`${socket.nsp.name}: ${socket.id} State: ${games[socket.nsp.name].state}`);
             
             socket.nsp.emit('update state', games[socket.nsp.name].state);
     

@@ -7,7 +7,7 @@ module.exports = (io) => {
     
         startQuiz(socket);
     
-        games[socket.nsp.name].users.push({id: socket.id});
+        games[socket.nsp.name].sockets.push(socket.id);
     
         socket.nsp.emit('update users');
     

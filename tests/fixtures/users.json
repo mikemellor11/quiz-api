@@ -2,39 +2,29 @@
     "game-1": {
         "users": [
             {
-                "id": "socket-id-1",
-                "session": {
-                    "name": "name-1",
-                    "id": "session-id-1"
-                }
+                "name": "name-1",
+                "id": "session-id-1",
+                "sockets": ["socket-id-1"]
             },
             {
-                "id": "socket-id-2",
-                "session": {
-                    "name": "name-2",
-                    "id": "session-id-2"
-                }
+                "name": "name-2",
+                "id": "session-id-2",
+                "sockets": ["socket-id-2", "socket-id-7"]
             },
             {
-                "id": "socket-id-3"
-            },
-            {
-                "id": "socket-id-4"
-            },
-            {
-                "id": "socket-id-5",
-                "session": {
-                    "name": "name-2",
-                    "id": "session-id-2"
-                }
-            },
-            {
-                "id": "socket-id-6",
-                "session": {
-                    "name": "name-3",
-                    "id": "session-id-3"
-                }
+                "name": "name-3",
+                "id": "session-id-3",
+                "sockets": ["socket-id-3", "socket-id-6"]
             }
+        ],
+        "sockets": [
+            "socket-id-1",
+            "socket-id-2",
+            "socket-id-3",
+            "socket-id-4",
+            "socket-id-5",
+            "socket-id-6",
+            "socket-id-7"
         ]
     }
 }
