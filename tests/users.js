@@ -15,12 +15,24 @@ describe('users', () => {
         expect(users.active(game)).to.have.lengthOf(3);
     });
 
+    it('Should return an empty array if invalid game passed to active', () => {
+        expect(users.active(null)).to.be.empty;
+    });
+
     it('Should only return spectators', () => {
         expect(users.spectators(game)).to.have.lengthOf(2);
     });
 
+    it('Should return an empty array if invalid game passed to spectators', () => {
+        expect(users.spectators(null)).to.be.empty;
+    });
+
     it('Should return all connected users', () => {
         expect(users.connected(game)).to.have.lengthOf(5);
+    });
+
+    it('Should return an empty array if invalid game passed to connected', () => {
+        expect(users.connected(null)).to.be.empty;
     });
 
     it('Should find an active user with a given session id', () => {
