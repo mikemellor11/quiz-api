@@ -4,15 +4,33 @@ var { STATE, games } = require('../globals.js');
 
 module.exports = exports = {
     active: (game) => {
-        return game.users;
+        return game && game.users || [];
     },
     spectators: (game) => {
-        return game.sockets.filter(d => !exports.find(game, d));
+        return game && game.sockets.filter(d => !exports.find(game, d)) || [];
     },
-    find: (game, socket) => {
-        return game.users.find(d => d.sockets.indexOf(socket) > -1) || null;
+    connected: (game) => {
+        return game && exports.active(game).concat(exports.spectators(game)) || [];
     },
+    // Find active user with given socket id
+    find: (game, id) => {
+        return exports.active(game).find(d => d.sockets.indexOf(id) > -1) || null;
+    },
+    // Find active user with the given id
     findActive: (game, id) => {        
         return exports.active(game).find(d => d.id === id) || null;
+    },
+    // Check if socket id is bound to a user, if it is remove it. Also remove socket from sockets array
+    remove: (game, id) => {
+        var user = exports.find(game, id);
+
+        if(user){
+            user.sockets.splice(user.sockets.findIndex(d => d === id), 1);
+        }
+
+        game.sockets.splice(game.sockets.findIndex(d => d === id), 1);
+    },
+    removeActive: (game, id) => {
+        game.users.splice(game.users.findIndex(d => d.id === id), 1);
     }
 };

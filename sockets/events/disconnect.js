@@ -1,7 +1,8 @@
 var { games } = require('../../globals.js');
 
 var users = {}; ({ 
-    find: users.find
+    find: users.find,
+    remove: users.remove
 } = require('../../services/users.js'));
 
 module.exports = (socket) => {
@@ -10,12 +11,8 @@ module.exports = (socket) => {
     socket.on('disconnect', reason => {
         console.log(`${socket.nsp.name}: ${socket.id} disconnected`);
 
-        var user = users.find(game, socket.id);
-        if(user){
-            user.sockets.splice(user.sockets.findIndex(d => d === socket.id), 1);
-        }
+        users.remove(game, socket.id);
 
-        game.sockets.splice(game.sockets.findIndex(d => d === socket.id), 1);
         socket.nsp.emit('update users');
 
         if(!game.sockets.length){

@@ -1,7 +1,6 @@
 var { games } = require('../../globals.js');
 
 var users = {}; ({ 
-    find: users.find,
     findActive: users.findActive
 } = require('../../services/users.js'));
 

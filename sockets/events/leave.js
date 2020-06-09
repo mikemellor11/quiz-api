@@ -1,7 +1,8 @@
 var { games } = require('../../globals.js');
 
 var users = {}; ({ 
-    findActive: users.findActive
+    findActive: users.findActive,
+    removeActive: users.removeActive
 } = require('../../services/users.js'));
 
 module.exports = (socket) => {
@@ -14,10 +15,8 @@ module.exports = (socket) => {
 
         socket.nsp.emit('output', '🔴 <i>' + user.name + ' left the game..</i>');
         
-        var index = game.users.findIndex(d => d.id === user.id);
-
-        game.users.splice(index, 1);
-        
         socket.nsp.emit('update users');
+
+        users.removeActive(game, user.id);
     });
 }

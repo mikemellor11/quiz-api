@@ -4,7 +4,8 @@ var { games } = require('../../globals.js');
 
 var users = {}; ({ 
     active: users.active,
-    spectators: users.spectators
+    spectators: users.spectators,
+    connected: users.connected
 } = require('../../services/users.js'));
 
 module.exports = (app) => {
@@ -13,6 +14,6 @@ module.exports = (app) => {
     route.get('/:room', (req, res) => {
         var game = games[`/${req.params.room}`];
 
-        res.json(game && users.active(game).concat(users.spectators(game)) || []);
+        res.json(users.connected(game));
     });
 };
