@@ -14,10 +14,5 @@ module.exports = (socket) => {
         users.remove(game, socket.id);
 
         socket.nsp.emit('update users');
-
-        if(!game.sockets.length){
-            console.log(`${socket.nsp.name}: all users disconnected - closing game`);
-            game = null; 
-        }
     });
 }

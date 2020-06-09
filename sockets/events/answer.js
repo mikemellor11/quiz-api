@@ -10,13 +10,15 @@ module.exports = (socket) => {
     var game = games[socket.nsp.name];
     
     socket.on('answer', ({session, index}) => {
-        var user = users.findActive(session.id);
+        var user = users.findActive(game, session.id);
+
         // Only accept a single answer from the same user
-        if(game.question.submitted.findIndex(d => d.id === user.session.id) === -1){
-            console.log(`${socket.nsp.name}: ${socket.id} ${user.session.name} answered ${index}`);
+        if(game.question.submitted.findIndex(d => d.id === user.id) === -1){
+            console.log(`${socket.nsp.name}: ${socket.id} ${user.name} answered ${index}`);
 
             game.question.submitted.push({
-                id: user.session.id,
+                id: user.id,
+                name: user.name,
                 index: index
             });
 
@@ -24,19 +26,24 @@ module.exports = (socket) => {
 
             if(game.question.submitted.length === users.active(game).length){
                 game.question.submitted.forEach(d => {
-                    var user = game.users.find(dd => dd.session.id === d.id);
+                    // var user = game.users.find(dd => dd.session.id === d.id);
+                    var user = users.findActive(game, d.id);
 
                     if(d.index === game.question.correct){
-                        user.score += 10;
-                        console.log(`${socket.nsp.name}: ${user.session.id} ${user.session.name} answered correctly`);
+                        user.score += 100;
+                        console.log(`${socket.nsp.name}: ${user.id} ${user.name} answered correctly`);
                     } else {
-                        console.log(`${socket.nsp.name}: ${user.session.id} ${user.session.name} answered incorrectly`);
+                        console.log(`${socket.nsp.name}: ${user.id} ${user.name} answered incorrectly`);
                     }
                 });
 
+                game.question.answer = game.question.correct;
+
                 socket.nsp.emit('update users');
 
-                nextQuestion(game, socket);
+                setTimeout(() => {
+                    nextQuestion(game, socket);
+                }, 2000);
             }
         }
     });

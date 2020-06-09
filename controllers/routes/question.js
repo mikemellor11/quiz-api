@@ -11,7 +11,8 @@ module.exports = (app) => {
         res.json(game && game.question && {
             question: game.question.question,
             answers: game.question.answers,
-            submitted: game.question.submitted
+            submitted: game.question.submitted,
+            answer: game.question.answer
         } || null);
     });
 };
