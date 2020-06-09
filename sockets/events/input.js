@@ -10,6 +10,6 @@ module.exports = (socket) => {
     socket.on('input', ({session, message}) => {
         var user = session && users.findActive(game, session.id);
         
-        socket.nsp.emit('output', `<strong>${user && user.session.name || 'spectator'}</strong>: ${message}`);
+        socket.nsp.emit('output', `<strong>${user && user.name || 'spectator'}</strong>: ${message}`);
     });
 }
