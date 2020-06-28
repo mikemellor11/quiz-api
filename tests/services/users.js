@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 
 var users = require('../../services/users');
 
-describe('Services: users', () => {
+describe('services: users', () => {
     let games;
     let game;
 

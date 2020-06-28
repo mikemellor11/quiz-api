@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 var { STATE, games } = require('../../globals.js');
 
-const io_server = require('socket.io').listen(3001);
+const io_server = require('socket.io').listen(3002);
 const io = require('socket.io-client');
 
 require('../../sockets/index.js')(io_server);
@@ -20,11 +20,10 @@ describe('sockets: state', () => {
 
     it('Should add socket ids to games sockets array', (done) => {
         console.mute();
-        sockets.push(io.connect('http://localhost:3001/test'));
-        sockets.push(io.connect('http://localhost:3001/test'));
-        sockets.push(io.connect('http://localhost:3001/test'));
-        sockets.push(io.connect('http://localhost:3001/test'));
-        sockets.push(io.connect('http://localhost:3001/test'));
+        sockets.push(io.connect('http://localhost:3002/room-1'));
+        sockets.push(io.connect('http://localhost:3002/room-1'));
+        sockets.push(io.connect('http://localhost:3002/room-1'));
+        sockets.push(io.connect('http://localhost:3002/room-1'));
     
         sockets[0].on('update state', () => {
             game = games[sockets[0].nsp];
@@ -33,7 +32,7 @@ describe('sockets: state', () => {
                 console.resume();
 
                 sockets.forEach(d => {
-                    expect(game.sockets).to.be.an('array').that.includes(d.id);
+                    expect(game.sockets).to.be.an('array').that.contains(d.id);
                 });
 
                 sockets[0].off('update state');
@@ -49,7 +48,9 @@ describe('sockets: state', () => {
         
         sockets[0].once('update users', () => {
             console.resume();
+            expect(game.users).to.have.lengthOf(1);
             expect(game.users[0].id).to.be.equal('test-1');
+            expect(game.users[0].sockets).to.contain(sockets[0].id);
             done();
         });
     });
@@ -62,6 +63,7 @@ describe('sockets: state', () => {
             console.resume();
             expect(game.users).to.have.lengthOf(1);
             expect(game.users[0].sockets).to.have.lengthOf(2);
+            expect(game.users[0].sockets).to.contain(sockets[1].id);
             done();
         });
     });
@@ -74,6 +76,51 @@ describe('sockets: state', () => {
             console.resume();
             expect(game.users).to.have.lengthOf(2);
             expect(game.users[1].id).to.be.equal('test-2');
+            expect(game.users[1].sockets).to.contain(sockets[2].id);
+            done();
+        });
+    });
+
+    it('Should only remove socket id from users sockets array if disconnect called on active user with multiple connected sockets', (done) => {
+        console.mute();
+
+        var id = sockets[1].id;
+        
+        sockets[0].once('update users', () => {
+            console.resume();
+            expect(game.users[0].sockets).to.have.lengthOf(1);
+            expect(game.sockets).to.not.contain(id);
+            done();
+        });
+
+        sockets[1].disconnect();
+    });
+
+    it('Should remove user from sockets array if disconnected called on active user', (done) => {
+        console.mute();
+
+        var id = sockets[2].id;
+        
+        sockets[0].once('update users', () => {
+            console.resume();
+            expect(game.users[1].sockets).to.not.have.length;
+            expect(game.sockets).to.not.contain(id);
+            
+            done();
+        });
+
+        sockets[2].disconnect();
+    });
+
+    it('Should reconnect active user if join called with an existing session id', (done) => {
+        console.mute();
+
+        sockets[3].emit('join', sessions[1]);
+        
+        sockets[3].once('update users', () => {
+            console.resume();
+            expect(game.users[1].sockets).to.have.lengthOf(1);
+            expect(game.users[1].sockets).to.contain(sockets[3].id);
             done();
         });
     });

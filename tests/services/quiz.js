@@ -4,7 +4,7 @@ var { STATE, games } = require('../../globals.js');
 
 var quiz = require('../../services/quiz');
 
-describe('Services: quiz', () => {
+describe('services: quiz', () => {
     let game;
     let question;
 
