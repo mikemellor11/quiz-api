@@ -48,7 +48,11 @@ module.exports = (socket) => {
 
                 setTimeout(() => {
                     quiz.getQuestion(game)
-                        .then((res) => quiz.setQuestion(game, res.data.results[0]));
+                        .then((res) => {
+                            quiz.setQuestion(game, res.data.results[0]);
+
+                            socket.nsp.emit('question');
+                        });
                 }, 2000);
             }
         }

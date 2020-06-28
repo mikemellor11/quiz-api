@@ -13,10 +13,16 @@ module.exports = (io) => {
         var game = games[socket.nsp.name];
         
         if(!game){
-            game = quiz.init(socket, true);
+            game = quiz.init(socket.nsp.name);
+
+            socket.nsp.emit('update state', game.state)
 
             quiz.getToken()
-                .then((res) => quiz.ready(game, res.data.token));
+                .then((res) => {
+                    quiz.ready(game, res.data.token);
+
+                    socket.nsp.emit('update state', game.state);
+                });
         }
     
         game.sockets.push(socket.id);

@@ -18,6 +18,10 @@ module.exports = (socket) => {
         socket.nsp.emit('update state', game.state);
 
         quiz.getQuestion(game)
-            .then((res) => quiz.setQuestion(game, res.data.results[0]));
+            .then((res) => {
+                quiz.setQuestion(game, res.data.results[0]);
+
+                socket.nsp.emit('question');
+            });
     });
 }

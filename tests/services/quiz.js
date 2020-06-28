@@ -11,7 +11,7 @@ describe('Services: quiz', () => {
         game = games['game-1'];
     });
 
-    it('Should return the current game when init called', () => {
+    it('Should init and return the current game', () => {
         expect(true).to.be.true;
     });
 });
