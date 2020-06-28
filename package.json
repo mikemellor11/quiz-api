@@ -4,13 +4,15 @@
   "description": "Api for managing quiz's",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha ./tests/*.js",
+    "test": "nyc mocha ./tests/**/*.js",
+    "tdd": "npm test -- --watch",
     "start": "nodemon"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "0.19.2",
+    "console.mute": "0.3.0",
     "cors": "2.8.5",
     "express": "4.17.1",
     "socket.io": "2.3.0"

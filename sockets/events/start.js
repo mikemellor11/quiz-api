@@ -5,6 +5,8 @@ module.exports = (socket) => {
     var game = games[socket.nsp.name];
     
     socket.on('start', message => {
+        if(game.state !== STATE.READY){ return; }
+
         console.log(`${socket.nsp.name}: ${socket.id} State: ${STATE.PLAYING}`);
         game.state = STATE.PLAYING;
 

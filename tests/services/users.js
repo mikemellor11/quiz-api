@@ -1,13 +1,13 @@
 var expect = require('chai').expect;
 
-var users = require('../services/users');
+var users = require('../../services/users');
 
-describe('users', () => {
+describe('Services: users', () => {
     let games;
     let game;
 
     before(() => {
-        games = require('./fixtures/users.json');
+        games = JSON.parse(JSON.stringify(require('../fixtures/users.json')));
         game = games['game-1'];
     });
 
