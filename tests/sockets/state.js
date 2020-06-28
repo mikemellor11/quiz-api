@@ -24,16 +24,16 @@ describe('sockets: state', () => {
         });
     });
 
-    it('State should be SETUP on first init', () => {
-        expect(game.state).to.be.equal(STATE.SETUP);
+    it('State should be INIT on first init', () => {
+        expect(game.state).to.be.equal(STATE.INIT);
     });
 
-    it('State should stay as to SETUP if start called before state set to READY', () => {
+    it('State should stay as to INIT if start called before state set to READY', () => {
         console.mute();
         socket.emit('start');
 
         console.resume();
-        expect(game.state).to.be.equal(STATE.SETUP);
+        expect(game.state).to.be.equal(STATE.INIT);
     });
 
     it('State should be READY after the quiz api has returned', (done) => {

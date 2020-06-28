@@ -2,44 +2,47 @@ const axios = require('axios');
 
 var { STATE, games } = require('../globals.js');
 
-module.exports = {
-    startQuiz: (socket) => {
-        if(!games[socket.nsp.name]){
-            games[socket.nsp.name] = {
-                users: [],
-                sockets: [],
-                state: STATE.SETUP,
-                token: null,
-                question: null
-            };
-            console.log(`${socket.nsp.name}: ${socket.id} State: ${games[socket.nsp.name].state}`);
-            
-            socket.nsp.emit('update state', games[socket.nsp.name].state);
-    
-            axios.get(`https://opentdb.com/api_token.php?command=request`)
-                .then(res => {
-                    console.log(`${socket.nsp.name}: ${socket.id} State: ${STATE.READY}`);
-                    
-                    games[socket.nsp.name].token = res.data.token;
-                    games[socket.nsp.name].state = STATE.READY;
-                    socket.nsp.emit('update state', games[socket.nsp.name].state);
-                });
+module.exports = exports = {
+    init: (socket) => {
+        if(games[socket.nsp.name]) {
+            return;
         }
+
+        var game = games[socket.nsp.name] = {
+            socket: socket.nsp,
+            users: [],
+            sockets: [],
+            state: STATE.INIT,
+            token: null,
+            question: null
+        };
+        
+        console.log(`${game.socket.name}: State: ${game.state}`);
+        
+        game.socket.emit('update state', game.state);
+
+        return game;
     },
-    nextQuestion: (game, socket) => {
-        axios.get(`https://opentdb.com/api.php?amount=1&type=multiple&token=${game.token}`)
-            .then(res => {
-                game.question = {
-                    question: res.data.results[0].question,
-                    answers: [res.data.results[0].correct_answer]
-                        .concat(res.data.results[0].incorrect_answers)
-                        .sort(),
-                    submitted: []
-                };
+    ready: (game, token) => {
+        console.log(`${game.socket.name}: State: ${STATE.READY}`);
 
-                game.question.correct = game.question.answers.indexOf(res.data.results[0].correct_answer);
+        game.token = token;
+        game.state = STATE.READY;
+        game.socket.emit('update state', game.state);
+    },
+    getToken: () => axios.get(`https://opentdb.com/api_token.php?command=request`),
+    getQuestion: (game) => axios.get(`https://opentdb.com/api.php?amount=1&type=multiple&token=${game.token}`),
+    setQuestion: (game, question) => {
+        game.question = {
+            question: question.question,
+            answers: [question.correct_answer]
+                .concat(question.incorrect_answers)
+                .sort(),
+            submitted: []
+        };
 
-                socket.nsp.emit('question');
-            });
+        game.question.correct = game.question.answers.indexOf(question.correct_answer);
+
+        game.socket.emit('question');
     }
 };

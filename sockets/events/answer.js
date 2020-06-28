@@ -1,6 +1,11 @@
 var { STATE, games } = require('../../globals.js');
 var { nextQuestion } = require('../../services/quiz.js');
 
+var quiz = {}; ({ 
+    getQuestion: quiz.getQuestion,
+    setQuestion: quiz.setQuestion
+} = require('../../services/quiz.js'));
+
 var users = {}; ({ 
     active: users.active,
     findActive: users.findActive
@@ -42,7 +47,8 @@ module.exports = (socket) => {
                 socket.nsp.emit('update users');
 
                 setTimeout(() => {
-                    nextQuestion(game, socket);
+                    quiz.getQuestion(game)
+                        .then((res) => quiz.setQuestion(game, res.data.results[0]));
                 }, 2000);
             }
         }

@@ -1,5 +1,5 @@
 var STATE = {
-    SETUP: 0,
+    INIT: 0,
     READY: 1,
     PLAYING: 2,
     FINISHED: 3
