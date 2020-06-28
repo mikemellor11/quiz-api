@@ -15,11 +15,15 @@ module.exports = (io) => {
         if(!game){
             game = quiz.init(socket.nsp.name);
 
+            console.log(`${game.name}: State: ${game.state}`);
+
             socket.nsp.emit('update state', game.state)
 
             quiz.getToken()
                 .then((res) => {
                     quiz.ready(game, res.data.token);
+
+                    console.log(`${game.name}: State: ${game.state}`);
 
                     socket.nsp.emit('update state', game.state);
                 });

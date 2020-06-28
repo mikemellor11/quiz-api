@@ -16,15 +16,11 @@ module.exports = exports = {
             token: null,
             question: null
         };
-        
-        console.log(`${game.name}: State: ${game.state}`);
 
         return game;
     },
     ready: (game, token) => {
-        console.log(`${game.name}: State: ${STATE.READY}`);
-
-        game.token = token;
+        game.token = token || '';
         game.state = STATE.READY;
     },
     getToken: () => axios.get(`https://opentdb.com/api_token.php?command=request`),

@@ -24,11 +24,11 @@ describe('sockets: state', () => {
         });
     });
 
-    it('State should be INIT on first init', () => {
+    it('Should have an initial state of INIT', () => {
         expect(game.state).to.be.equal(STATE.INIT);
     });
 
-    it('State should stay as to INIT if start called before state set to READY', () => {
+    it('Should keep INIT state if start called before state set to READY', () => {
         console.mute();
         socket.emit('start');
 
@@ -36,7 +36,7 @@ describe('sockets: state', () => {
         expect(game.state).to.be.equal(STATE.INIT);
     });
 
-    it('State should be READY after the quiz api has returned', (done) => {
+    it('Should be READY after the quiz api has returned', (done) => {
         console.mute();
         socket.once('update state', () => {
             console.resume();
@@ -45,7 +45,7 @@ describe('sockets: state', () => {
         });
     });
 
-    it('State should be PLAYING after the quiz api has returned', (done) => {
+    it('Should be PLAYING after the quiz api has returned', (done) => {
         console.mute();
         socket.emit('start');
 
@@ -56,7 +56,7 @@ describe('sockets: state', () => {
         });
     });
 
-    it('State should be FINISHED when first user has reached the target score', (done) => {
+    it('Should be FINISHED when first user has reached the target score', (done) => {
         console.mute();
         socket.emit('join', {id: 'test', name: 'john'});
 
