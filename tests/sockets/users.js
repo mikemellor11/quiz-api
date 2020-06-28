@@ -9,7 +9,7 @@ const io = require('socket.io-client');
 
 require('../../sockets/index.js')(io_server);
 
-describe('sockets: state', () => {
+describe('sockets: users', () => {
     var sockets = [];
     var game;
     var sessions;
@@ -20,6 +20,7 @@ describe('sockets: state', () => {
 
     it('Should add socket ids to games sockets array', (done) => {
         console.mute();
+        sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
@@ -81,6 +82,39 @@ describe('sockets: state', () => {
         });
     });
 
+    it('Should remove active user if leave called', (done) => {
+        console.mute();
+        sockets[2].emit('leave');
+        
+        sockets[2].once('update users', () => {
+            expect(game.users).to.have.lengthOf(1);
+
+            sockets[2].emit('join', sessions[1]);
+        
+            sockets[2].once('update users', () => {
+                console.resume();
+                done();
+            });
+        });
+    });
+
+    it('Should ignore multiple calls to leave', (done) => {
+        console.mute();
+        sockets[2].emit('leave');
+        sockets[2].emit('leave');
+        
+        sockets[2].once('update users', () => {
+            expect(game.users).to.have.lengthOf(1);
+            
+            sockets[2].emit('join', sessions[1]);
+        
+            sockets[2].once('update users', () => {
+                console.resume();
+                done();
+            });
+        });
+    });
+
     it('Should only remove socket id from users sockets array if disconnect called on active user with multiple connected sockets', (done) => {
         console.mute();
 
@@ -122,6 +156,36 @@ describe('sockets: state', () => {
             expect(game.users[1].sockets).to.have.lengthOf(1);
             expect(game.users[1].sockets).to.contain(sockets[3].id);
             done();
+        });
+    });
+
+    it('Should ignore a second join call from the same socket id', (done) => {
+        console.mute();
+
+        sockets[3].emit('join', sessions[1]);
+        
+        sockets[3].once('update users', () => {
+            console.resume();
+            expect(game.users).to.have.lengthOf(2);
+            expect(game.users[1].sockets).to.have.lengthOf(1);
+            expect(game.users[1].sockets).to.contain(sockets[3].id);
+            done();
+        });
+    });
+
+    it('Should ignore join calls for new users after the game has begun', (done) => {
+        console.mute();
+
+        sockets[3].emit('start');
+        
+        sockets[3].once('update state', () => {
+            sockets[4].emit('join', sessions[2]);
+        
+            sockets[4].once('update users', () => {
+                console.resume();                
+                expect(game.users).to.have.lengthOf(2);
+                done();
+            });
         });
     });
 
