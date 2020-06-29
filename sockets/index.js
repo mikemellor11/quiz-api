@@ -21,7 +21,7 @@ module.exports = (io) => {
 
             quiz.getToken()
                 .then((res) => {
-                    quiz.ready(game, res.data.token);
+                    quiz.ready(game, res);
 
                     console.log(`${game.name}: State: ${game.state}`);
 

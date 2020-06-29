@@ -13,27 +13,20 @@ describe('sockets: state', () => {
     var socket;
     var game;
 
-    before((done) => {
+    before(() => {
         console.mute();
-        socket = io.connect('http://localhost:3001/test');
-        
+        socket = io.connect('http://localhost:3001/room-state');
+    });
+
+    it('Should have an initial state of INIT', (done) => {
         socket.on('connect', () => {
             game = games[socket.nsp];
-            console.resume(); 
-            done();
+
+            socket.once('update state', () => {
+                expect(game.state).to.be.equal(STATE.INIT);
+                done();
+            });
         });
-    });
-
-    it('Should have an initial state of INIT', () => {
-        expect(game.state).to.be.equal(STATE.INIT);
-    });
-
-    it('Should keep INIT state if start called before state set to READY', () => {
-        console.mute();
-        socket.emit('start');
-
-        console.resume();
-        expect(game.state).to.be.equal(STATE.INIT);
     });
 
     it('Should be READY after the quiz api has returned', (done) => {

@@ -23,7 +23,13 @@ module.exports = exports = {
         game.token = token || '';
         game.state = STATE.READY;
     },
-    getToken: () => axios.get(`https://opentdb.com/api_token.php?command=request`),
+    getToken: () => {
+        return new Promise((resolve) => {
+                axios.get(`https://opentdb.com/api_token.php?command=request`)
+                    .then((res) => resolve(res.data.token))
+                    .catch((err) => resolve(''));
+            });
+    },
     getQuestion: (game) => axios.get(`https://opentdb.com/api.php?amount=1&type=multiple&token=${game.token}`),
     setQuestion: (game, question) => {
         game.question = {

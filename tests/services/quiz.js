@@ -38,7 +38,7 @@ describe('services: quiz', () => {
     it('Should return a valid open trivia token', (done) => {
         quiz.getToken()
             .then((res) => {
-                expect(res.data.token).to.be.string;
+                expect(res).to.be.string;
                 done();
             });
     });
