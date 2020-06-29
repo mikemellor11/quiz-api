@@ -28,6 +28,9 @@ module.exports = exports = {
         game.token = token || '';
         game.state = STATE.READY;
     },
+    finished: (game) => {
+        game.state = STATE.FINISHED;
+    },
     getToken: () => {
         return new Promise((resolve) => {
                 axios.get(`https://opentdb.com/api_token.php?command=request`)
@@ -82,5 +85,8 @@ module.exports = exports = {
                 user.score += 100;
             }
         });
+    },
+    roundFinished: (game) => {
+        return !!users.active(game).filter(d => d.score >= 1000).length;
     }
 };

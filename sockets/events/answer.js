@@ -5,7 +5,9 @@ var quiz = {}; ({
     getQuestion: quiz.getQuestion,
     setQuestion: quiz.setQuestion,
     answer: quiz.answer,
-    allAnswered: quiz.allAnswered
+    allAnswered: quiz.allAnswered,
+    roundFinished: quiz.roundFinished,
+    finished: quiz.finished
 } = require('../../services/quiz.js'));
 
 var users = {}; ({ 
@@ -27,14 +29,18 @@ module.exports = (socket) => {
 
                 socket.nsp.emit('update users');
 
-                setTimeout(() => {
-                    quiz.getQuestion(game)
-                        .then((res) => {
-                            quiz.setQuestion(game, res.data.results[0]);
-
-                            socket.nsp.emit('question');
-                        });
-                }, 2000);
+                if(quiz.roundFinished(game)){
+                    quiz.finished(game);
+                } else {
+                    setTimeout(() => {
+                        quiz.getQuestion(game)
+                            .then((res) => {
+                                quiz.setQuestion(game, res.data.results[0]);
+    
+                                socket.nsp.emit('question');
+                            });
+                    }, 2000);
+                }
             }
         }
     });

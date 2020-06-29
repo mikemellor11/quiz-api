@@ -3,6 +3,27 @@ const axios = require('axios');
 var { STATE, games } = require('../globals.js');
 
 module.exports = exports = {
+    add: (game, session, socket) => {
+        var user = exports.findActive(game, session.id);
+
+        if(user){
+            // Not sure if this if statement is needed
+            if(user.sockets.indexOf(socket) === -1){
+                user.sockets.push(socket);
+            }
+        } else if(game.state === STATE.INIT || game.state === STATE.READY){
+            game.users.push({
+                id: session.id,
+                name: session.name,
+                sockets: [socket],
+                score: 0
+            });
+
+            return true;
+        }
+
+        return false;
+    },
     active: (game) => {
         return game && game.users || [];
     },

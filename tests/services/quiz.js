@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var { STATE, games } = require('../../globals.js');
 
 var quiz = require('../../services/quiz');
+var users = require('../../services/users');
 
 describe('services: quiz', () => {
     let game;
@@ -49,5 +50,15 @@ describe('services: quiz', () => {
                 expect(res.data.results[0]).to.have.property('question');
                 done();
             });
+    });
+
+    it('Should give user 100 points if correct answer given', () => {
+        quiz.setQuestion(game, question);
+        users.add(game, {id: 'test-1', name: 'pat'}, 'socket-1');
+        quiz.answer(game, 'test-1', 0);
+        for(var i = 0; i < 10; i++){quiz.addScores(game);}
+        expect(quiz.roundFinished(game)).to.be.true;
+        quiz.finished(game);
+        expect(game.state).to.be.equal(STATE.FINISHED);
     });
 });

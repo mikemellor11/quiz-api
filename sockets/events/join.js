@@ -1,7 +1,8 @@
 var { STATE, games } = require('../../globals.js');
 
 var users = {}; ({ 
-    findActive: users.findActive
+    findActive: users.findActive,
+    add: users.add
 } = require('../../services/users.js'));
 
 module.exports = (socket) => {
@@ -10,23 +11,11 @@ module.exports = (socket) => {
     socket.on('join', session => {
         var user = users.findActive(game, session.id);
 
-        if(user){
-            if(user.sockets.indexOf(socket.id) === -1){
-                console.log(`${socket.nsp.name}: ${socket.id} ${session.id.slice(0, 8)} ${session.name} joined the game in a another window`);
-
-                user.sockets.push(socket.id);
-            }
-        } else if(game.state === STATE.INIT || game.state === STATE.READY){
+        if(users.add(game, session, socket.id)){
             console.log(`${socket.nsp.name}: ${socket.id} ${session.id.slice(0, 8)} ${session.name} joined the game`);
-
-            game.users.push({
-                id: session.id,
-                name: session.name,
-                sockets: [socket.id],
-                score: 0
-            });
-            
-            socket.nsp.emit('output', '🔵 <i>' + session.name + ' joined the game..</i>');      
+            socket.nsp.emit('output', '🔵 <i>' + session.name + ' joined the game..</i>');     
+        } else{
+            console.log(`${socket.nsp.name}: ${socket.id} ${session.id.slice(0, 8)} ${session.name} joined the game in a another window`);
         }
         
         socket.nsp.emit('update users');
