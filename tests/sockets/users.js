@@ -4,6 +4,8 @@ var expect = require('chai').expect;
 
 var { STATE, games } = require('../../globals.js');
 
+var users = require('../../services/users');
+
 const io_server = require('socket.io').listen(3002);
 const io = require('socket.io-client');
 
@@ -20,6 +22,7 @@ describe('sockets: users', () => {
 
     it('Should add socket ids to games sockets array', (done) => {
         console.mute();
+        sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
         sockets.push(io.connect('http://localhost:3002/room-1'));
@@ -48,10 +51,11 @@ describe('sockets: users', () => {
         sockets[0].emit('join', sessions[0]);
         
         sockets[0].once('update users', () => {
+            var user = users.findActive(game, 'test-1');
             console.resume();
             expect(game.users).to.have.lengthOf(1);
-            expect(game.users[0].id).to.be.equal('test-1');
-            expect(game.users[0].sockets).to.contain(sockets[0].id);
+            expect(user).to.not.be.null;
+            expect(user.sockets).to.contain(sockets[0].id);
             done();
         });
     });
@@ -61,10 +65,12 @@ describe('sockets: users', () => {
         sockets[1].emit('join', sessions[0]);
         
         sockets[1].once('update users', () => {
+            var user = users.find(game, sockets[1].id);
             console.resume();
             expect(game.users).to.have.lengthOf(1);
-            expect(game.users[0].sockets).to.have.lengthOf(2);
-            expect(game.users[0].sockets).to.contain(sockets[1].id);
+            expect(user).to.not.be.null;
+            expect(user.sockets).to.have.lengthOf(2);
+            expect(user.sockets).to.contain(sockets[1].id);
             done();
         });
     });
@@ -74,10 +80,11 @@ describe('sockets: users', () => {
         sockets[2].emit('join', sessions[1]);
         
         sockets[2].once('update users', () => {
+            var user = users.findActive(game, 'test-2');
             console.resume();
             expect(game.users).to.have.lengthOf(2);
-            expect(game.users[1].id).to.be.equal('test-2');
-            expect(game.users[1].sockets).to.contain(sockets[2].id);
+            expect(user).to.not.be.null;
+            expect(user.sockets).to.contain(sockets[2].id);
             done();
         });
     });
@@ -87,8 +94,13 @@ describe('sockets: users', () => {
         sockets[2].emit('leave');
         
         sockets[2].once('update users', () => {
+            console.resume();
             expect(game.users).to.have.lengthOf(1);
+            expect(users.findActive(game, 'test-2')).to.be.null;
+            expect(game.sockets).to.be.an('array').that.contains(sockets[2].id);
 
+            console.mute();
+            
             sockets[2].emit('join', sessions[1]);
         
             sockets[2].once('update users', () => {
@@ -104,7 +116,12 @@ describe('sockets: users', () => {
         sockets[2].emit('leave');
         
         sockets[2].once('update users', () => {
+            console.resume();
             expect(game.users).to.have.lengthOf(1);
+            expect(users.findActive(game, 'test-2')).to.be.null;
+            expect(game.sockets).to.be.an('array').that.contains(sockets[2].id);
+
+            console.mute();
             
             sockets[2].emit('join', sessions[1]);
         
@@ -119,10 +136,12 @@ describe('sockets: users', () => {
         console.mute();
 
         var id = sockets[1].id;
-        
+        var user = users.find(game, id);
+
         sockets[0].once('update users', () => {
             console.resume();
-            expect(game.users[0].sockets).to.have.lengthOf(1);
+            expect(user.sockets).to.have.lengthOf(1);
+            expect(user.sockets).to.not.contain(id);
             expect(game.sockets).to.not.contain(id);
             done();
         });
@@ -134,10 +153,12 @@ describe('sockets: users', () => {
         console.mute();
 
         var id = sockets[2].id;
+        var user = users.find(game, id);
         
         sockets[0].once('update users', () => {
             console.resume();
-            expect(game.users[1].sockets).to.not.have.length;
+            expect(user.sockets).to.not.have.length;
+            expect(user.sockets).to.not.contain(id);
             expect(game.sockets).to.not.contain(id);
             
             done();
@@ -152,9 +173,11 @@ describe('sockets: users', () => {
         sockets[3].emit('join', sessions[1]);
         
         sockets[3].once('update users', () => {
+            var user = users.findActive(game, 'test-2');
             console.resume();
-            expect(game.users[1].sockets).to.have.lengthOf(1);
-            expect(game.users[1].sockets).to.contain(sockets[3].id);
+            expect(game.users).to.have.lengthOf(2);
+            expect(user.sockets).to.have.lengthOf(1);
+            expect(user.sockets).to.contain(sockets[3].id);
             done();
         });
     });
@@ -165,10 +188,11 @@ describe('sockets: users', () => {
         sockets[3].emit('join', sessions[1]);
         
         sockets[3].once('update users', () => {
+            var user = users.findActive(game, 'test-2');
             console.resume();
             expect(game.users).to.have.lengthOf(2);
-            expect(game.users[1].sockets).to.have.lengthOf(1);
-            expect(game.users[1].sockets).to.contain(sockets[3].id);
+            expect(user.sockets).to.have.lengthOf(1);
+            expect(user.sockets).to.contain(sockets[3].id);
             done();
         });
     });
@@ -182,11 +206,42 @@ describe('sockets: users', () => {
             sockets[4].emit('join', sessions[2]);
         
             sockets[4].once('update users', () => {
+                var user = users.findActive(game, 'test-3');
                 console.resume();                
+                expect(user).to.be.null;
                 expect(game.users).to.have.lengthOf(2);
                 done();
             });
         });
+    });
+
+    it('Should reconnect active user if join called with an existing session id even after game has started', (done) => {
+        console.mute();
+
+        var id = sockets[3].id;
+        var user = users.find(game, id);
+        
+        sockets[0].once('update users', () => {
+            console.resume();
+            expect(user.sockets).to.have.lengthOf(0);
+            expect(game.sockets).to.not.contain(id);
+            
+            console.mute();
+
+            setTimeout(() => {
+                sockets[5].emit('join', sessions[1]);
+            
+                sockets[5].once('update users', () => {
+                    console.resume();
+                    expect(game.users).to.have.lengthOf(2);
+                    expect(user.sockets).to.have.lengthOf(1);
+                    expect(user.sockets).to.contain(sockets[5].id);
+                    done();
+                });
+            });
+        });
+
+        sockets[3].disconnect();
     });
 
     after((done) => {
