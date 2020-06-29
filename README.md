@@ -1,0 +1,1 @@
+[![Coverage Status](https://coveralls.io/repos/github/mikemellor11/quiz-api/badge.svg?branch=development)](https://coveralls.io/github/mikemellor11/quiz-api?branch=development)
