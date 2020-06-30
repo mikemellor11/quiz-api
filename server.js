@@ -11,4 +11,4 @@ app.use('/', require("./controllers/index.js")());
 
 require('./sockets/index.js')(io);
 
-const server = http.listen(8080, () => console.log("Listening on *:8080"));
+const server = http.listen(process.env.PORT || 8080, () => console.log("Listening on *:8080"));
