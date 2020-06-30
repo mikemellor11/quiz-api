@@ -7,5 +7,9 @@ module.exports = () => {
     require('./routes/state')(app);
     require('./routes/question')(app);
 
+    app.get('/', (req, res) => {
+        res.json({});
+    });
+
 	return app
 }
