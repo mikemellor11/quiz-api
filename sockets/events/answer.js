@@ -39,7 +39,7 @@ module.exports = (socket) => {
     
                                 socket.nsp.emit('question');
                             });
-                    }, 2000);
+                    }, 1000);
                 }
             }
         }
