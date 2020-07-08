@@ -5,23 +5,19 @@ var quiz = {}; ({
     setQuestion: quiz.setQuestion
 } = require('../../services/quiz.js'));
 
-module.exports = (socket) => {
-    var game = games[socket.nsp.name];
+module.exports = (socket, game) => (message) => {
+    if(game.state !== STATE.READY){ return; }
+
+    console.log(`${socket.nsp.name}: ${socket.id} State: ${STATE.PLAYING}`);
     
-    socket.on('start', message => {
-        if(game.state !== STATE.READY){ return; }
+    game.state = STATE.PLAYING;
 
-        console.log(`${socket.nsp.name}: ${socket.id} State: ${STATE.PLAYING}`);
-        
-        game.state = STATE.PLAYING;
+    socket.nsp.emit('update state', game.state);
 
-        socket.nsp.emit('update state', game.state);
+    quiz.getQuestion(game)
+        .then((res) => {
+            quiz.setQuestion(game, res.data.results[0]);
 
-        quiz.getQuestion(game)
-            .then((res) => {
-                quiz.setQuestion(game, res.data.results[0]);
-
-                socket.nsp.emit('question');
-            });
-    });
+            socket.nsp.emit('question');
+        });
 }

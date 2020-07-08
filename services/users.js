@@ -6,7 +6,10 @@ module.exports = exports = {
     add: (game, session, socket) => {
         var user = exports.findActive(game, session.id);
 
-        if(user){
+        // Check if socket already bound to a user, if so ignore
+        if(exports.find(game, socket)){
+            return false;
+        } else if(user){
             // Not sure if this if statement is needed
             if(user.sockets.indexOf(socket) === -1){
                 user.sockets.push(socket);

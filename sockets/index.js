@@ -33,11 +33,11 @@ module.exports = (io) => {
     
         socket.nsp.emit('update users');
     
-        require('./events/answer.js')(socket);
-        require('./events/disconnect.js')(socket);
-        require('./events/input.js')(socket);
-        require('./events/join.js')(socket);
-        require('./events/leave.js')(socket);
-        require('./events/start.js')(socket);
+        socket.on('disconnect', require('./events/disconnect.js')(socket, games[socket.nsp.name]));
+        socket.on('join', require('./events/join.js')(socket, games[socket.nsp.name]));
+        socket.on('leave', require('./events/leave.js')(socket, games[socket.nsp.name]));
+        socket.on('start', require('./events/start.js')(socket, games[socket.nsp.name]));
+        socket.on('answer', require('./events/answer.js')(socket, games[socket.nsp.name]));
+        socket.on('input', require('./events/input.js')(socket, games[socket.nsp.name]));
     });
 }

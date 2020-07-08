@@ -15,33 +15,29 @@ var users = {}; ({
     findActive: users.findActive
 } = require('../../services/users.js'));
 
-module.exports = (socket) => {
-    var game = games[socket.nsp.name];
-    
-    socket.on('answer', ({session, index}) => {
-        if(quiz.answer(game, session.id, index)){
-            console.log(`${socket.nsp.name}: ${socket.id} ${socket.name} answered ${index}`);
+module.exports = (socket, game) => ({session, index}) => {
+    if(quiz.answer(game, session.id, index)){
+        console.log(`${socket.nsp.name}: ${socket.id} ${socket.name} answered ${index}`);
 
-            socket.nsp.emit('question');
+        socket.nsp.emit('question');
 
-            if(quiz.allAnswered(game)){
-                console.log(`${socket.nsp.name}: All answered`);
+        if(quiz.allAnswered(game)){
+            console.log(`${socket.nsp.name}: All answered`);
 
-                socket.nsp.emit('update users');
+            socket.nsp.emit('update users');
 
-                if(quiz.roundFinished(game)){
-                    quiz.finished(game);
-                } else {
-                    setTimeout(() => {
-                        quiz.getQuestion(game)
-                            .then((res) => {
-                                quiz.setQuestion(game, res.data.results[0]);
-    
-                                socket.nsp.emit('question');
-                            });
-                    }, 1000);
-                }
+            if(quiz.roundFinished(game)){
+                quiz.finished(game);
+            } else {
+                setTimeout(() => {
+                    quiz.getQuestion(game)
+                        .then((res) => {
+                            quiz.setQuestion(game, res.data.results[0]);
+
+                            socket.nsp.emit('question');
+                        });
+                }, 1000);
             }
         }
-    });
+    }
 }

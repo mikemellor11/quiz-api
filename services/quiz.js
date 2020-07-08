@@ -24,9 +24,15 @@ module.exports = exports = {
 
         return game;
     },
+    remove: (name) => {
+        games[name] = null;
+    },
     ready: (game, token) => {
         game.token = token || '';
         game.state = STATE.READY;
+    },
+    start: (game) =>{
+        game.state = STATE.PLAYING;
     },
     finished: (game) => {
         game.state = STATE.FINISHED;
