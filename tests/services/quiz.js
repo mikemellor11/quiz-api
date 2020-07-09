@@ -7,10 +7,10 @@ var users = require('../../services/users');
 
 describe('services: quiz', () => {
     let game;
-    let question;
+    let questions;
 
     before(() => {
-        question = JSON.parse(JSON.stringify(require('../fixtures/question.json')));
+        questions = JSON.parse(JSON.stringify(require('../fixtures/questions.json')));
     });
 
     it('Should init and return the current game', () => {
@@ -31,7 +31,7 @@ describe('services: quiz', () => {
     });
 
     it('Should set the question', () => {
-        quiz.setQuestion(game, question);
+        quiz.setQuestion(game, questions[0]);
 
         expect(game.question.question).to.be.equal('Dummy question?');
     });
@@ -53,7 +53,7 @@ describe('services: quiz', () => {
     });
 
     it('Should give user 100 points if correct answer given', () => {
-        quiz.setQuestion(game, question);
+        quiz.setQuestion(game, questions[0]);
         users.add(game, {id: 'test-1', name: 'pat'}, 'socket-1');
         quiz.answer(game, 'test-1', 0);
         for(var i = 0; i < 10; i++){quiz.addScores(game);}

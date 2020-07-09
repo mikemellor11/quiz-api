@@ -1,0 +1,14 @@
+[
+    {
+        "category": "Dummy category",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question": "Dummy question?",
+        "correct_answer": "Correct 1",
+        "incorrect_answers": [
+            "Incorrect 1",
+            "Incorrect 2",
+            "Incorrect 3"
+        ]
+    }
+]
