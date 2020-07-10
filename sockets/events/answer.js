@@ -36,7 +36,7 @@ module.exports = (socket, game) => ({session, index}) => {
 
                             socket.nsp.emit('question');
                         });
-                }, 1000);
+                }, 2000);
             }
         }
     }

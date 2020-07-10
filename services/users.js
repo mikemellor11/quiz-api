@@ -16,8 +16,7 @@ module.exports = exports = {
             }
         } else if(game.state === STATE.INIT || game.state === STATE.READY){
             game.users.push({
-                id: session.id,
-                name: session.name,
+                ...session,
                 sockets: [socket],
                 score: 0
             });
