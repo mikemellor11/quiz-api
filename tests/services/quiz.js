@@ -52,7 +52,7 @@ describe('services: quiz', () => {
             });
     });
 
-    it('Should give user 100 points if correct answer given', () => {
+    it('Should set the game state to finished when score of 1000 reached', () => {
         quiz.setQuestion(game, questions[0]);
         users.add(game, {id: 'test-1', name: 'pat'}, 'socket-1');
         quiz.answer(game, 'test-1', 0);
@@ -60,5 +60,12 @@ describe('services: quiz', () => {
         expect(quiz.roundFinished(game)).to.be.true;
         quiz.finished(game);
         expect(game.state).to.be.equal(STATE.FINISHED);
+    });
+
+    it('Should reset the game score and state to ready', () => {
+        quiz.reset(game);
+        
+        expect(game.users[0].score).to.be.equal(0);
+        expect(game.state).to.be.equal(STATE.READY);
     });
 });

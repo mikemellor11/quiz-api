@@ -27,7 +27,11 @@ module.exports = (socket, game) => ({session, index}) => {
             socket.nsp.emit('update users');
 
             if(quiz.roundFinished(game)){
+                console.log(`${socket.nsp.name}: Game finished`);
+
                 quiz.finished(game);
+
+                socket.nsp.emit('update state', game.state);
             } else {
                 setTimeout(() => {
                     quiz.getQuestion(game)

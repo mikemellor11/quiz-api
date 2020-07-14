@@ -37,6 +37,11 @@ module.exports = exports = {
     finished: (game) => {
         game.state = STATE.FINISHED;
     },
+    reset: (game) => {
+        game.state = STATE.READY;
+        game.question = null;
+        exports.resetScores(game);
+    },
     getToken: () => {
         return new Promise((resolve) => {
                 axios.get(`https://opentdb.com/api_token.php?command=request`)
@@ -82,6 +87,9 @@ module.exports = exports = {
         }
 
         return false;
+    },
+    resetScores: (game) => {
+        game.users.forEach(d => d.score = 0);
     },
     addScores: (game) => {
         game.question.submitted.forEach(d => {
