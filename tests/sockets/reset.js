@@ -19,12 +19,12 @@ async function setup(cb){
     console.resume();
 }
 
-function join(socket, session){
-    require('../../sockets/events/join.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])(session)
+function reset(socket){
+    require('../../sockets/events/reset.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])()
 }
 
-function leave(socket){
-    require('../../sockets/events/leave.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])()
+function join(socket, session){
+    require('../../sockets/events/join.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])(session)
 }
 
 function connect(socket){
@@ -46,7 +46,7 @@ function disconnect(socket){
     });
 }
 
-describe('sockets: leave', () => {
+describe('sockets: reset', () => {
     var sockets;
     var sessions;
 
@@ -83,38 +83,12 @@ describe('sockets: leave', () => {
         });
     });
 
-    it('Should remove active user', async () => {
-        await setup(async () => {
-            leave(sockets['/room-1'][0], sessions[0]);
-        });
-
-        var game = games['/room-1'];
-        var user = users.findActive(game, 'test-1');
-
-        expect(game.users).to.have.lengthOf(1);
-        expect(user).to.be.null;
-    });
-
-    it('Should ignore multiple calls', async () => {
-        await setup(async () => {
-            leave(sockets['/room-1'][0], sessions[0]);
-            leave(sockets['/room-1'][0], sessions[0]);
-        });
-
-        var game = games['/room-1'];
-        var user = users.findActive(game, 'test-1');
-
-        expect(game.users).to.have.lengthOf(1);
-        expect(user).to.be.null;
-    });
-
-    it('Should end game if all users leave', async () => {
+    it('Should set the game state back to READY', async () => {
         var game = games['/room-1'];
 
         await setup(async () => {
             quiz.start(game);
-            leave(sockets['/room-1'][0], sessions[0]);
-            leave(sockets['/room-1'][1], sessions[1]);
+            reset(sockets['/room-1'][1]);
         });
 
         expect(game.state).to.equal(STATE.READY);

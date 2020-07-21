@@ -24,6 +24,10 @@ describe('services: quiz', () => {
         expect(game.question).to.be.null;
     });
 
+    it('Should ignore multiple init commands', () => {
+        expect(quiz.init('test')).to.be.undefined;
+    });
+
     it('Should set game state to ready', () => {
         quiz.ready(game);
 

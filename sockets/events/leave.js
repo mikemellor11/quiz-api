@@ -1,4 +1,8 @@
-var { games } = require('../../globals.js');
+var { games, STATE } = require('../../globals.js');
+
+var quiz = {}; ({ 
+    reset: quiz.reset
+} = require('../../services/quiz.js'));
 
 var users = {}; ({ 
     find: users.find,
@@ -13,8 +17,14 @@ module.exports = (socket, game) => () => {
 
         socket.nsp.emit('output', '🔴 <i>' + user.name + ' left the game..</i>');
         
+        users.removeActive(game, user.id);
+        
         socket.nsp.emit('update users');
 
-        users.removeActive(game, user.id);
+        if(!game.users.length){
+            quiz.reset(game);
+
+            socket.nsp.emit('update state', game.state);
+        }
     }
 }
