@@ -11,9 +11,9 @@ module.exports = exports = {
             return false;
         } else if(user){
             // Not sure if this if statement is needed
-            if(user.sockets.indexOf(socket) === -1){
+            // if(user.sockets.indexOf(socket) === -1){
                 user.sockets.push(socket);
-            }
+            // }
         } else if(game.state === STATE.INIT || game.state === STATE.READY){
             game.users.push({
                 ...session,
