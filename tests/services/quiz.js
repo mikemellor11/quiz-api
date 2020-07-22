@@ -59,7 +59,7 @@ describe('services: quiz', () => {
     it('Should set the game state to finished when score of 1000 reached', () => {
         quiz.setQuestion(game, questions[0]);
         users.add(game, {id: 'test-1', name: 'pat'}, 'socket-1');
-        quiz.answer(game, 'test-1', 0);
+        quiz.answer(game, {id: 'test-1', name: 'pat'}, 0);
         for(var i = 0; i < 10; i++){quiz.addScores(game);}
         expect(quiz.roundFinished(game)).to.be.true;
         quiz.finished(game);

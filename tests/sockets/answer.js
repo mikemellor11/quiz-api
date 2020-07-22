@@ -114,10 +114,26 @@ describe('sockets: answer', () => {
     it('Should add points to scores if all users have answered', async () => {
         await setup(async () => {
             answer(sockets['/room-2'][0], sessions[0], 0);
-            answer(sockets['/room-2'][1], sessions[0], 0);
+            answer(sockets['/room-2'][1], sessions[1], 0);
         });
 
-        expect(users.findActive(games['/room-2'], 'test-1').score).to.equal(0);
+        expect(users.findActive(games['/room-2'], 'test-1').score).to.equal(100);
+    });
+
+    it('Should ignore answers from spectators', async () => {
+        await setup(async () => {
+            answer(sockets['/room-1'][0], null, 0);
+        });
+
+        expect(users.findActive(games['/room-1'], 'test-2')).to.be.null;
+    });
+
+    it('Should ignore answers from active users that are not part of this game', async () => {
+        await setup(async () => {
+            answer(sockets['/room-1'][0], sessions[1], 0);
+        });
+
+        expect(users.findActive(games['/room-1'], 'test-2')).to.be.null;
     });
 
     afterEach(async () => {

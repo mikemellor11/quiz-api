@@ -61,18 +61,20 @@ module.exports = exports = {
 
         game.question.correct = game.question.answers.indexOf(question.correct_answer);
     },
-    answer: (game, id, index) => {
-        var user = users.findActive(game, id);
+    answer: (game, session, index) => {
+        if(session){
+            var user = users.findActive(game, session.id);
 
-        // Only accept a single answer from the same user
-        if(game.question.submitted.findIndex(d => d.id === user.id) === -1){
-            game.question.submitted.push({
-                id: user.id,
-                name: user.name,
-                index: index
-            });
+            // Only accept a single answer from the same user and from users that are part of this game
+            if(user && game.question.submitted.findIndex(d => d.id === user.id) === -1){
+                game.question.submitted.push({
+                    id: user.id,
+                    name: user.name,
+                    index: index
+                });
 
-            return true;
+                return true;
+            }
         }
         
         return false;

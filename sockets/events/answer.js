@@ -16,8 +16,8 @@ var users = {}; ({
 } = require('../../services/users.js'));
 
 module.exports = (socket, game) => ({session, index}) => {
-    if(quiz.answer(game, session.id, index)){
-        console.log(`${socket.nsp.name}: ${socket.id} ${socket.name} answered ${index}`);
+    if(quiz.answer(game, session, index)){
+        console.log(`${socket.nsp.name}: ${socket.id} ${session.name} answered ${index}`);
 
         socket.nsp.emit('question');
 
