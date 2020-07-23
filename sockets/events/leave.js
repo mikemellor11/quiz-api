@@ -1,14 +1,7 @@
 var { games, STATE } = require('../../globals.js');
 
-var quiz = {}; ({ 
-    reset: quiz.reset
-} = require('../../services/quiz.js'));
-
-var users = {}; ({ 
-    find: users.find,
-    removeActive: users.removeActive,
-    admin: users.admin,
-} = require('../../services/users.js'));
+var quiz = require('../../services/quiz.js');
+var users = require('../../services/users.js');
 
 module.exports = (socket, game) => () => {
     var user = users.find(game, socket.id);
@@ -28,6 +21,29 @@ module.exports = (socket, game) => () => {
             quiz.reset(game);
 
             socket.nsp.emit('update state', game.state);
+        } else {
+            if(quiz.allAnswered(game)){
+                console.log(`${socket.nsp.name}: All answered`);
+    
+                socket.nsp.emit('update users');
+    
+                if(quiz.roundFinished(game)){
+                    console.log(`${socket.nsp.name}: Game finished`);
+    
+                    quiz.finished(game);
+    
+                    socket.nsp.emit('update state', game.state);
+                } else {
+                    setTimeout(() => {
+                        quiz.getQuestion(game)
+                            .then((res) => {
+                                quiz.setQuestion(game, res.data.results[0]);
+    
+                                socket.nsp.emit('question');
+                            });
+                    }, 2000);
+                }
+            }
         }
     }
 }

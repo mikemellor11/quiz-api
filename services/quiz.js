@@ -80,7 +80,7 @@ module.exports = exports = {
         return false;
     },
     allAnswered: (game) => {
-        if(game.question.submitted.length === users.active(game).length){
+        if(game.question.submitted.length >= users.active(game).length){
             exports.addScores(game);
 
             game.question.answer = game.question.correct;
@@ -97,7 +97,7 @@ module.exports = exports = {
         game.question.submitted.forEach(d => {
             var user = users.findActive(game, d.id);
 
-            if(d.index === game.question.correct){
+            if(user && d.index === game.question.correct){
                 user.score += 100;
             }
         });

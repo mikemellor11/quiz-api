@@ -1,19 +1,8 @@
 var { STATE, games } = require('../../globals.js');
 var { nextQuestion } = require('../../services/quiz.js');
 
-var quiz = {}; ({ 
-    getQuestion: quiz.getQuestion,
-    setQuestion: quiz.setQuestion,
-    answer: quiz.answer,
-    allAnswered: quiz.allAnswered,
-    roundFinished: quiz.roundFinished,
-    finished: quiz.finished
-} = require('../../services/quiz.js'));
-
-var users = {}; ({ 
-    active: users.active,
-    findActive: users.findActive
-} = require('../../services/users.js'));
+var quiz = require('../../services/quiz.js');
+var users = require('../../services/users.js');
 
 module.exports = (socket, game) => ({session, index}) => {
     if(quiz.answer(game, session, index)){

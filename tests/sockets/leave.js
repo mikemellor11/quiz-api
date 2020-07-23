@@ -6,7 +6,7 @@ describe('sockets: leave', () => {
 
     it('Should remove active user', async () => {
         await setup(async () => {
-            leave(sockets['/room-1'][0], sessions[0]);
+            leave(sockets['/room-1'][0]);
         });
 
         var game = games['/room-1'];
@@ -18,8 +18,8 @@ describe('sockets: leave', () => {
 
     it('Should ignore multiple calls', async () => {
         await setup(async () => {
-            leave(sockets['/room-1'][0], sessions[0]);
-            leave(sockets['/room-1'][0], sessions[0]);
+            leave(sockets['/room-1'][0]);
+            leave(sockets['/room-1'][0]);
         });
 
         var game = games['/room-1'];
@@ -34,8 +34,8 @@ describe('sockets: leave', () => {
 
         await setup(async () => {
             quiz.start(game);
-            leave(sockets['/room-1'][0], sessions[0]);
-            leave(sockets['/room-1'][1], sessions[1]);
+            leave(sockets['/room-1'][0]);
+            leave(sockets['/room-1'][1]);
         });
 
         expect(game.state).to.equal(STATE.READY);

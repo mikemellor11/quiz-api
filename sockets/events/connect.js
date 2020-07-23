@@ -1,10 +1,6 @@
 var { games } = require('../../globals.js');
 
-var quiz = {}; ({ 
-    init: quiz.init,
-    ready: quiz.ready,
-    getToken: quiz.getToken
-} = require('../../services/quiz.js'));
+var quiz = require('../../services/quiz.js');
 
 module.exports = (socket) => {
     var game = games[socket.nsp.name];

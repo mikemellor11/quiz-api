@@ -59,6 +59,25 @@ describe('sockets: answer', () => {
         expect(users.findActive(games['/room-2'], 'test-2')).to.be.null;
     });
 
+    it('Should trigger all answers given if user answers and then leaves then another user answers', async () => {
+        await setup(async () => {
+            answer(sockets['/room-1'][0], sessions[0], 0);
+            leave(sockets['/room-1'][0]);
+            answer(sockets['/room-1'][1], sessions[1], 0);
+        });
+
+        expect(users.find(games['/room-1'], sockets['/room-1'][1].id).score).to.equal(100);
+    });
+
+    it('Should trigger all answers given if the last user to answer leaves without answering', async () => {
+        await setup(async () => {
+            answer(sockets['/room-1'][0], sessions[0], 0);
+            leave(sockets['/room-1'][1]);
+        });
+
+        expect(users.find(games['/room-1'], sockets['/room-1'][0].id).score).to.equal(100);
+    });
+
     afterEach(clean);
     after(close);
 });
