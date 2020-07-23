@@ -23,6 +23,10 @@ function join(socket, session){
     require('../../sockets/events/join.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])(session)
 }
 
+function leave(socket){
+    require('../../sockets/events/leave.js')(serverSocket(socket.id), games[serverSocket(socket.id).nsp.name])()
+}
+
 function connect(socket){
     return new Promise((resolve) => {
         socket.once('connect', () => resolve());
@@ -183,6 +187,39 @@ describe('sockets: join', () => {
         });
 
         expect(game.users).to.have.lengthOf(0);
+    });
+
+    it('Should set an admin flag on the first person to join', async () => {
+        await setup(async () => {
+            join(sockets['/room-1'][0], sessions[0]);
+        });
+
+        var user = users.find(games['/room-1'], sockets['/room-1'][0].id);
+
+        expect(user).to.have.property('admin');
+    });
+
+    it('Should not set admin flag on second user to join', async () => {
+        await setup(async () => {
+            join(sockets['/room-1'][0], sessions[0]);
+            join(sockets['/room-1'][1], sessions[1]);
+        });
+
+        var user = users.find(games['/room-1'], sockets['/room-1'][1].id);
+
+        expect(user).to.not.have.property('admin');
+    });
+
+    it('Should resassign the admin to a new user if the admin leaves', async () => {
+        await setup(async () => {
+            join(sockets['/room-1'][0], sessions[0]);
+            join(sockets['/room-1'][1], sessions[1]);
+            leave(sockets['/room-1'][0]);
+        });
+
+        var user = users.find(games['/room-1'], sockets['/room-1'][1].id);
+
+        expect(user).to.have.property('admin');
     });
 
     afterEach(async () => {

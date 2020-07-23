@@ -6,7 +6,8 @@ var quiz = {}; ({
 
 var users = {}; ({ 
     find: users.find,
-    removeActive: users.removeActive
+    removeActive: users.removeActive,
+    admin: users.admin,
 } = require('../../services/users.js'));
 
 module.exports = (socket, game) => () => {
@@ -18,6 +19,8 @@ module.exports = (socket, game) => () => {
         socket.nsp.emit('output', '🔴 <i>' + user.name + ' left the game..</i>');
         
         users.removeActive(game, user.id);
+
+        users.admin(game);
         
         socket.nsp.emit('update users');
 

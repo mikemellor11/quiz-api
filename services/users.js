@@ -55,5 +55,10 @@ module.exports = exports = {
     },
     removeActive: (game, id) => {
         game.users.splice(game.users.findIndex(d => d.id === id), 1);
+    },
+    admin: (game) => {
+        if(game.users.length && !game.users.filter(d => d.admin).length){
+            game.users[0].admin = true;
+        }
     }
 };
