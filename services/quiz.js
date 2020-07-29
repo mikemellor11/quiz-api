@@ -80,7 +80,7 @@ module.exports = exports = {
         return false;
     },
     allAnswered: (game) => {
-        if(game.question.submitted.length >= users.active(game).length){
+        if(game.question && game.question.submitted.length >= users.active(game).length){
             exports.addScores(game);
 
             game.question.answer = game.question.correct;
